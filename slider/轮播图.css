@@ -1,0 +1,88 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+ul,
+ol{
+    list-style: none;
+}
+/* 轮播图主体部分 */
+.carousel_box{
+    position: relative;
+    overflow: hidden;
+    width: 600px;
+    height: 280px;
+    margin: 50px auto;
+}
+.carousel{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1000%;
+    height: 100%;
+}
+.carousel_item{
+    float: left;
+    width: 600px;
+    height: 100%;
+}
+.carousel_item img {
+    width: 100%;
+}
+/* 轮播图目录部分 */
+.carousel_catalogue{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10px;
+    display: inline-block;
+    padding: 5px;
+    background-color: rgba(0,0,0,.2);
+    border-radius: 10px;
+    transition: all .3s;
+}
+.catalogue_item {
+    float: left;
+    width: 10px;
+    height: 10px;
+    margin: 0 3px;
+    border-radius: 50%;
+    background-color:rgba(255,255,255,0.5) ;  
+    transition: all .3s;
+}
+.carousel_catalogue:hover{
+    background-color: rgba(0,0,0,.35);
+}
+.catalogue_item:hover{
+    background-color: rgba(255,255,255,1);
+}
+.catalogue_active {
+    background-color: rgba(255,255,255,1);
+}
+/* 箭头样式 */
+.arrow_pre,
+.arrow_next{
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,.25);
+    color: rgba(255,255,255,0.6);
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all .3s;
+    text-align: center;
+    line-height: 36px;
+    cursor: pointer;
+}
+.arrow_pre:hover,
+.arrow_next:hover{
+    background-color: rgba(0,0,0,0.35);
+    color: rgba(255,255,255,1);
+}
+.arrow_pre {
+    left: 15px;
+}
+.arrow_next{
+    right: 15px;
+}

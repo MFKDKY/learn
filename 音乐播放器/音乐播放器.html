@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐播放器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        @font-face {
+            font-family: 'iconfont';
+            src: url('./font/iconfont.eot');
+            src: url('./font/iconfont.eot?#iefix') format('embedded-opentype'),
+                url('./font/iconfont.woff2') format('woff2'),
+                url('./font/iconfont.woff') format('woff'),
+                url('./font/iconfont.ttf') format('truetype'),
+                url('./font/iconfont.svg#iconfont') format('svg');
+        }
+
+        .iconfont {
+            font-family: "iconfont" !important;
+            font-size: 16px;
+            font-style: normal;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .clearfix:after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+
+        .music_box {
+            position: relative;
+            width: 460px;
+            height: 150px;
+            border-radius: 12px;
+            background: linear-gradient(to right, #e39ba7 40px, #7ca8cc);
+            margin: 100px auto;
+        }
+
+        .img_left,
+        .msg_right {
+            float: left;
+        }
+
+        .img_left {
+            position: absolute;
+            top: 50%;
+            left: 25px;
+            margin-top: -55px;
+            width: 70px;
+            height: 70px;
+            border: 20px solid #000;
+            border-radius: 50%;
+            animation: rotateAlbumArt 5s linear 0s infinite;
+            animation-play-state: paused;
+        }
+
+        .msg_right {
+            padding: 20px 20px 0 170px;
+            ;
+        }
+
+        .music_controls {
+            height: 24px;
+            margin-top: 5px;
+        }
+
+        .music_title {
+            color: #fff;
+            font-weight: 400;
+            padding-left: 5px;
+            width: 265px;
+            height: 43px;
+            word-wrap: anywhere;
+        }
+
+        .music_event {
+            float: left;
+            margin-right: 50px;
+        }
+
+        .music_play {
+            font-size: 13px;
+        }
+
+        .music_next {
+            transform: rotate(-180deg);
+        }
+
+        .music_event span {
+            color: #fff;
+            cursor: pointer;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            vertical-align: middle
+        }
+
+        .music_volume {
+            position: relative;
+            float: right;
+            width: 100px;
+            height: 5px;
+            border-radius: 6px;
+            background: #ddd;
+            margin-top: 6px;
+            z-index: 5;
+        }
+
+        .music_volume_bac {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 5px;
+            background: #fff;
+            border-radius: 6px;
+        }
+
+        .volume {
+            position: absolute;
+            left: -22px;
+            top: -6px;
+            color: #fff;
+            z-index: 10;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+
+        .music_progress {
+            position: relative;
+            width: 265px;
+            height: 5px;
+            background: #ddd;
+            border-radius: 6px;
+            margin: 20px 0 0 5px;
+        }
+
+        .music_progress span {
+            position: absolute;
+            top: 8px;
+            font-size: 12px;
+            padding: 1px 2px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.18);
+            color: #fff;
+        }
+
+        .timeout {
+            left: 0;
+        }
+
+        .all_time {
+            right: 0;
+        }
+
+        .music_progress .inline_block {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0px;
+            height: 5px;
+            background: #fff;
+            border-radius: 6px;
+            padding: 0;
+            transition: all .1s linear;
+        }
+
+        .music_event .music_pause {
+            display: none;
+        }
+
+
+        @keyframes rotateAlbumArt {
+            0% {
+                -webkit-transform: rotateZ(0);
+                transform: rotateZ(0);
+            }
+
+            100% {
+                -webkit-transform: rotateZ(360deg);
+                transform: rotateZ(360deg);
+            }
+        }
+
+        .line {
+            display: none;
+            position: absolute;
+            top: 2px;
+            left: -22px;
+            width: 16px;
+            height: 2px;
+            background-color: #fff;
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="music_box clearfix">
+        <img class="img_left" />
+        <div class="msg_right">
+            <h4 class="music_title"></h4>
+            <div class="music_controls clearfix">
+                <div class="music_event">
+                    <span class="iconfont music_pre">&#xe604;</span>
+                    <span class="iconfont music_pause">&#xe601;</span>
+                    <span class="iconfont music_play">&#xe775;</span>
+                    <span class="iconfont music_next">&#xe604;</span>
+                    <span class="iconfont music_reload">&#xe72c;</span>
+                </div>
+                <div class="music_volume">
+                    <span class="iconfont volume">&#xe60e;</span>
+                    <span class="line"></span>
+                    <div class="music_volume_bac"></div>
+                </div>
+            </div>
+            <div class="music_progress">
+                <span class="timeout">01:23</span>
+                <span class="all_time">03:45</span>
+                <span class="inline_block"></span>
+            </div>
+
+        </div>
+
+    </div>
+    <script>
+        window.onload = function () {
+            let music_box = document.getElementsByClassName('music_box')[0];
+            let music_volume = document.getElementsByClassName('music_volume')[0];
+            let music_volume_bac = document.getElementsByClassName('music_volume_bac')[0];
+            let music_muted = document.getElementsByClassName('volume')[0];
+            let play_bac = document.getElementsByClassName('inline_block')[0];
+            let paly_width = document.getElementsByClassName('music_progress')[0];
+            let music_next = document.getElementsByClassName('music_next')[0];
+            let play_btn = document.getElementsByClassName('music_play')[0];
+            let pause_btn = document.getElementsByClassName('music_pause')[0];
+            let pre_btn = document.getElementsByClassName('music_pre')[0];
+            let next_btn = document.getElementsByClassName('music_next')[0];
+            let audio = document.createElement('audio');
+            audio.setAttribute('preload', 'preload');
+            audio.setAttribute('class', 'audio_');
+            audio.setAttribute('muted', 'false');
+            document.body.appendChild(audio);
+            let time;
+            let timer;
+
+            let xml = new XMLHttpRequest();
+            xml.open('get', 'https://api.uomg.com/api/rand.music?sort=热歌榜&format=json');
+            xml.send();
+            xml.onreadystatechange = function () {
+                if (xml.readyState == 4) {
+                    if (xml.status == 200) {
+                        let res = JSON.parse(xml.responseText);
+                        music(res);
+                    }
+                }
+            }
+            //渲染音乐播放器
+            function music(res, callback) {
+                document.getElementsByClassName('img_left')[0].src = res.data.picurl;
+                document.getElementsByClassName('music_title')[0].innerHTML = res.data.name + '&nbsp;&nbsp;-&nbsp;&nbsp;' + res.data.artistsname;
+                music_volume_bac.style.width = music_volume.offsetWidth * audio.volume + 'px';
+                play_bac.style.width = 0;
+                audio.setAttribute('src', res.data.url);
+                //获取歌曲总长度
+                audio.oncanplay = function () {
+                    document.getElementsByClassName('all_time')[0].innerHTML = handleTime(audio.duration);
+                    time = audio.duration;
+                }
+                //获取歌曲当前播放进度
+                document.getElementsByClassName('timeout')[0].innerHTML = handleTime(audio.currentTime);
+                if (callback) {
+                    callback();
+                }
+            }
+            //开始播放
+            play_btn.onclick = function () {
+                audio.play();
+                play_btn.style.display = 'none';
+                pause_btn.style.display = 'inline-block';
+                let x = paly_width.offsetWidth * (audio.currentTime / time);
+                play_bac.style.width = x + 'px';
+                timer = setInterval(() => {
+                    document.getElementsByClassName('timeout')[0].innerHTML = handleTime(audio.currentTime);
+                    if (handleTime(audio.currentTime) == handleTime(audio.duration)) {
+                        end_timeout();
+                    }
+                }, 1000)
+            }
+            audio.addEventListener('playing', function () {
+                document.getElementsByClassName('img_left')[0].style.animationPlayState = 'running';
+            })
+            //暂停播放
+            pause_btn.onclick = function () {
+                audio.pause();
+                play_btn.style.display = 'inline-block';
+                pause_btn.style.display = 'none';
+                document.getElementsByClassName('img_left')[0].style.animationPlayState = 'paused';
+                clearInterval(timer);
+            }
+            //一首音乐播放结束，自动播放下一首
+            let end_timeout = () => {
+                clearInterval(timer);
+                document.getElementsByClassName('img_left')[0].style.animationPlayState = 'paused';
+                let xml = new XMLHttpRequest();
+                xml.open('get', 'https://api.uomg.com/api/rand.music?sort=热歌榜&format=json ');
+                xml.send();
+                xml.onreadystatechange = function () {
+                    if (xml.readyState == 4) {
+                        if (xml.status == 200) {
+                            let res = JSON.parse(xml.responseText);
+                            music(res, play_btn.onclick);
+                        }
+                    }
+                }
+            }
+
+            //点击音乐进度条
+            paly_width.onclick = function (e) {
+                let a = audio.buffered;
+                let s = a.end(a.length - 1);
+                let paly_width_length = e.pageX - (music_box.offsetLeft + paly_width.offsetLeft);
+                play_bac.style.width = paly_width_length + 'px';
+                let percentage = paly_width_length / paly_width.offsetWidth;
+                audio.currentTime = time * percentage;
+                document.getElementsByClassName('timeout')[0].innerHTML = handleTime(audio.currentTime);
+            }
+            //设置音量
+            music_volume.onclick = function (e) {
+                e.stopImmediatePropagation()
+                let volume_length = e.pageX - (music_box.offsetLeft + music_volume.offsetLeft);
+                music_volume_bac.style.width = volume_length + 'px';
+                let volume_percentage = volume_length / music_volume.offsetWidth;
+                audio.volume = volume_percentage;
+            }
+            //静音设置
+            music_muted.onclick = function (e) {
+                e.stopPropagation();
+                audio.muted = !audio.muted;
+                if (audio.muted) {
+                    document.getElementsByClassName('line')[0].style.display = 'inline-block';
+                } else {
+                    document.getElementsByClassName('line')[0].style.display = 'none';
+                }
+            }
+            //设置下一首
+            music_next.onclick = function () {
+                clearInterval(timer);
+                let xml = new XMLHttpRequest();
+                xml.open('get', 'https://api.uomg.com/api/rand.music?sort=热歌榜&format=json ');
+                xml.send();
+                xml.onreadystatechange = function () {
+                    if (xml.readyState == 4) {
+                        if (xml.status == 200) {
+                            let res = JSON.parse(xml.responseText);
+                            music(res, play_btn.onclick);
+                        }
+                    }
+                }
+            }
+            // 时间处理的函数
+            function handleTime(seconedTime) {
+                // 定义一个变量保存分钟
+                var minute = parseInt(seconedTime / 60, 10);
+                if (minute < 10) { minute = "0" + minute };
+                // 定义变量存放秒数
+                var second = (seconedTime - minute * 60).toFixed(2).split(".")[0];
+                if (second < 10) { second = "0" + second };
+                var Time = minute + ":" + second;
+                // 返回最终的时间数值
+                return Time;
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./轮播图.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_2493200_mlx207awxve.css">
+    <title>轮播图组件</title>
+</head>
+
+<body>
+    <div class="box">
+
+    </div>
+    <script>
+        class Slide {
+            //定义参数
+            constructor(setting) {
+                const { el, width, height, type, imgs, showArrow, buttonSite, autoPlay, interval } = setting;
+                this.el = el;
+                this.width = width || 600;
+                this.height = height || 280;
+                this.type = type;
+                this.imgs = imgs;
+                this.showArrow = showArrow;
+                this.buttonSite = buttonSite;
+                this.autoPlay = autoPlay;
+                this.interval = interval;
+                this.flag = true;
+                this.num = 0;
+                this.radius = 0;
+                this.auto_timer = null;
+            }
+            //初始化轮播图
+            init() {
+                this.InitSlider();
+                this.BtnSetting();
+                this.ArrowSetting();
+                this.AutoPlaySetting();
+            }
+            //初始化轮播图html框架
+            InitSlider() {
+                let box = document.querySelector(this.el);
+                let carousel_box = document.createElement('div');
+                let ul = document.createElement('ul');
+                let ol = document.createElement('ol');
+                let arr_left = document.createElement('div');
+                let arr_right = document.createElement('div');
+                box.appendChild(carousel_box);
+                carousel_box.appendChild(ul);
+                carousel_box.appendChild(ol);
+                carousel_box.appendChild(arr_left);
+                carousel_box.appendChild(arr_right);
+                carousel_box.setAttribute('class', 'carousel_box');
+                carousel_box.style.width = this.width + 'px';
+                carousel_box.style.height = this.height + 'px';
+                ul.setAttribute('class', 'carousel clearfix');
+                ol.setAttribute('class', 'carousel_catalogue clearfix');
+                arr_left.setAttribute('class', 'arrow_pre iconfont icon-angle-left');
+                arr_right.setAttribute('class', 'arrow_next iconfont icon-angle-right');
+                this.imgs.forEach((item, index) => {
+                    let li = document.createElement('li');
+                    let a = document.createElement('a');
+                    let img = document.createElement('img');
+                    li.setAttribute('class', 'carousel_item');
+                    li.style.width = this.width + 'px';
+                    li.style.height = this.height + 'px';
+                    a.setAttribute('href', item.url);
+                    img.src = item.src;
+                    ul.appendChild(li);
+                    li.appendChild(a);
+                    a.appendChild(img);
+
+                    let lis = document.createElement('li');
+                    lis.setAttribute('class', 'catalogue_item');
+                    lis.setAttribute('data-id', index);
+                    ol.appendChild(lis);
+                });
+                ol.children[0].className = 'catalogue_item catalogue_active';
+                if (this.type == 'shadow') {
+                    ul.style.position = 'absolute';
+                    ul.style.width = ul.parentNode.offsetWidth + 'px';
+                    for (let i = 0; i < this.imgs.length; i++) {
+                        ul.children[i].style.position = 'absolute';
+                        ul.children[i].style.opacity = 0;
+                    }
+                    ul.children[0].style.opacity = 1;
+                } else {
+                    ul.style.width = this.width * (this.imgs.length + 1) + 'px';
+                    let li_copy = ul.children[0].cloneNode(true);
+                    ul.appendChild(li_copy);
+                }
+            }
+            BtnSetting() {
+                let that = this;
+                let ol = document.getElementsByClassName('carousel_catalogue')[0];
+                if (this.buttonSite == 'inner') {
+                    ol.style.bottom = '10px';
+                } else if (this.buttonSite == 'none') {
+                    ol.style.display = 'none';
+                }
+                ol.onclick = function (e) {
+                    let li_id = e.target.getAttribute('data-id');
+                    let ul = document.getElementsByClassName('carousel')[0];
+                    if (li_id) {
+                        for (let i = 0; i < ul.children.length - 1; i++) {
+                            ol.children[i].className = 'catalogue_item';
+                        }
+                        if (that.type == 'shadow') {
+                            that.Animation_shadow(ul.children[that.num], 0, function () {
+                                that.flag = true;
+                            });
+                            that.Animation_shadow(ul.children[li_id], 1, function () {
+                                that.flag = true;
+                            });
+
+                        } else {
+                            ul.style.left = -li_id * ul.parentNode.offsetWidth + 'px';
+                        }
+                        that.radius = that.num = li_id;
+                        e.target.className = 'catalogue_item catalogue_active';
+                    }
+
+                }
+            }
+            ArrowSetting() {
+                let that = this;
+                let ul = document.getElementsByClassName('carousel')[0];
+                let ol = document.getElementsByClassName('carousel_catalogue')[0];
+                if (this.showArrow == 'none') {
+                    document.getElementsByClassName('arrow_pre')[0].style.display = 'none';
+                    document.getElementsByClassName('arrow_next')[0].style.display = 'none';
+                }
+                else if (this.showArrow == 'hover') {
+                    document.getElementsByClassName('arrow_pre')[0].style.left = '-10px';
+                    document.getElementsByClassName('arrow_next')[0].style.right = '-10px';
+                    document.getElementsByClassName('arrow_pre')[0].style.opacity = '0';
+                    document.getElementsByClassName('arrow_next')[0].style.opacity = '0';
+                    document.getElementsByClassName('carousel_box')[0].onmouseenter = function () {
+                        document.getElementsByClassName('arrow_pre')[0].style.left = '10px';
+                        document.getElementsByClassName('arrow_next')[0].style.right = '10px';
+                        document.getElementsByClassName('arrow_pre')[0].style.opacity = '1';
+                        document.getElementsByClassName('arrow_next')[0].style.opacity = '1';
+                    }
+                    document.getElementsByClassName('carousel_box')[0].onmouseleave = function () {
+                        document.getElementsByClassName('arrow_pre')[0].style.left = '-10px';
+                        document.getElementsByClassName('arrow_next')[0].style.right = '-10px';
+                        document.getElementsByClassName('arrow_pre')[0].style.opacity = '0';
+                        document.getElementsByClassName('arrow_next')[0].style.opacity = '0';
+                    }
+                } else {
+                    document.getElementsByClassName('arrow_pre')[0].style.display = 'block';
+                    document.getElementsByClassName('arrow_next')[0].style.display = 'block';
+                }
+                document.getElementsByClassName('arrow_pre')[0].onclick = function () {
+                    clearInterval(that.auto_timer);
+                    that.Arrow_pre();
+                }
+                document.getElementsByClassName('arrow_next')[0].onclick = function () {
+                    that.Arrow_next();
+                }
+            }
+            Arrow_pre() {
+                let that = this;
+                let ul = document.getElementsByClassName('carousel')[0];
+                let ol = document.getElementsByClassName('carousel_catalogue')[0];
+                if (that.type == 'shadow') {
+                    if (that.flag) {
+                        that.flag = false;
+                        that.Animation_shadow(ul.children[that.num], 0);
+                        that.num--;
+                        that.radius--;
+                        if (that.num < 0) {
+                            that.num = ul.children.length - 1;
+                        }
+                        if (that.radius < 0) {
+                            that.radius = ol.children.length - 1;
+                        }
+                        for (let i = 0; i < ol.children.length; i++) {
+                            ol.children[i].className = 'catalogue_item';
+                        }
+                        that.Animation_shadow(ul.children[that.num], 1, function () {
+                            that.flag = true;
+                            that.AutoPlaySetting();
+                        });
+                        ol.children[that.radius].className = 'catalogue_item catalogue_active'
+                    }
+                } else {
+                    if (that.flag) {
+                        that.flag = false;
+                        that.num--;
+                        that.radius--;
+
+                        if (that.num < 0) {
+                            ul.style.left = -(ul.children.length - 1) * ul.parentNode.offsetWidth + 'px';
+                            that.num = ul.children.length - 2;
+                        }
+                        if (that.radius < 0) {
+                            that.radius = ol.children.length - 1;
+                        }
+                        for (let i = 0; i < ul.children.length - 1; i++) {
+                            ol.children[i].className = 'catalogue_item';
+                        }
+                        that.Animation(ul, -that.num * ul.parentNode.offsetWidth, function () {
+                            that.flag = true;
+                        });
+                        ol.children[that.radius].className = 'catalogue_item catalogue_active'
+
+                    }
+                }
+
+            }
+            Arrow_next() {
+                let that = this;
+                let ul = document.getElementsByClassName('carousel')[0];
+                let ol = document.getElementsByClassName('carousel_catalogue')[0];
+
+                if (that.type == 'shadow') {
+                    if (that.flag) {
+                        that.flag = false;
+                        that.Animation_shadow(ul.children[that.num], 0);
+                        that.num++;
+                        that.radius++;
+                        if (that.num == ul.children.length) {
+                            that.num = 0;
+                        }
+                        if (that.radius > ol.children.length - 1) {
+                            that.radius = 0;
+                        }
+                        for (let i = 0; i < ul.children.length; i++) {
+                            ol.children[i].className = 'catalogue_item';
+                        }
+                        that.Animation_shadow(ul.children[that.num], 1, function () {
+                            that.flag = true;
+                        });
+                        ol.children[that.radius].className = 'catalogue_item catalogue_active'
+                    }
+                } else {
+                    if (that.flag) {
+                        that.flag = false;
+                        if (that.num == ul.children.length - 1) {
+                            that.num = 0;
+                            ul.style.left = 0;
+                        }
+                        that.num++;
+                        that.radius++;
+                        if (that.radius > ol.children.length - 1) {
+                            that.radius = 0;
+                        }
+                        for (let i = 0; i < ul.children.length - 1; i++) {
+                            ol.children[i].className = 'catalogue_item';
+                        }
+                        that.Animation(ul, -that.num * ul.parentNode.offsetWidth, function () {
+                            that.flag = true;
+                        });//开启节流阀
+                        ol.children[that.radius].className = 'catalogue_item catalogue_active';
+                    }
+                }
+
+            }
+            AutoPlaySetting() {
+                let that = this;
+                if (that.autoPlay == 'autoplay' && that.interval) {
+                    that.auto_timer = setInterval(function () {
+                        that.Arrow_next();
+                    }, that.interval)
+                }
+            }
+            Animation(obj, target, callback) {
+                clearInterval(obj.timer);
+                obj.timer = setInterval(function () {
+                    let step = (target - obj.offsetLeft) / 8;
+                    step = step > 0 ? Math.ceil(step) : Math.floor(step);
+                    if (target == obj.offsetLeft) {
+                        clearInterval(obj.timer);
+                        callback && callback();
+                    }
+                    obj.style.left = step + obj.offsetLeft + 'px';
+                }, 30)
+            }
+            Animation_shadow(obj, target, callback) {
+                clearInterval(obj.timer);
+                obj.timer = setInterval(function () {
+                    let iCur = parseInt(parseFloat(obj.style.opacity) * 100);
+                    let step = ((target * 100) - iCur) / 8;
+                    step = step > 0 ? Math.ceil(step) : Math.floor(step);
+                    obj.style['opacity'] = (step + iCur) / 100;
+                    if (1 == obj.style['opacity']) {
+                        clearInterval(obj.timer);
+                        callback && callback();
+                    }
+                }, 30)
+            }
+        }
+        let a = new Slide({
+            el: '.box',//轮播图边框
+            width: 600,//长度
+            height: 280,//宽度
+            //轮播图图片及对应跳转地址，以[{src:,url:},{src:,url:}]传参
+            imgs: [
+                {
+                    src: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=138621431,3584360818&fm=26&gp=0.jpg',
+                    url: '#'
+                },
+                {
+                    src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.qqoi.cn%2Fimg_bizhi%2F285691514.jpeg&refer=http%3A%2F%2Fwww.qqoi.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621248586&t=a39090bd9039b6ec4a007fa76584fc5d',
+                    url: '#'
+                },
+                {
+                    src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg9.51tietu.net%2Fpic%2F2019-091108%2Fm2dytn1luplm2dytn1lupl.jpg&refer=http%3A%2F%2Fimg9.51tietu.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621248586&t=74cf0a13dc931b9d80363eef783e1493',
+                    url: '#'
+                }
+            ],
+            //圆点是否显示 不显示为参数为none，显示为inner
+            buttonSite: 'inner',
+            //箭头显示：none：不显示  hover：鼠标悬停显示 否则正常持续显示
+            showArrow: 'block',
+            //是否自动播放 autoplay 必须 和 interval 一起赋值，否则不起作用
+            autoPlay: 'autoplay',
+            interval: 4000,
+            //轮播图样式：shadow：渐变轮播图 normal：通用轮播图
+            type: 'shadow'
+        });
+        a.init();
+    </script>
+</body>
+
+</html>
